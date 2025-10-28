@@ -55,10 +55,11 @@ export const SpockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </svg>
 );
 export const SheldonIcon: React.FC<React.HTMLProps<HTMLImageElement>> = (props) => (
-    <img 
-        src={sheldonImg} 
-        alt="Sheldon Cooper" 
-        className={`rounded-full object-cover ${props.className}`} 
+    <img
+        src={sheldonImg}
+        alt="Sheldon Cooper"
+        className={`rounded-full object-cover ${props.className ?? ''}`}
+        style={{ width: 60, height: 60, objectFit: 'cover', ...props.style }}
     />
 );
 

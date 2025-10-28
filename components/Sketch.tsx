@@ -234,7 +234,7 @@ const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, ga
         if (p5InstanceRef.current) {
             p5InstanceRef.current.remove();
         }
-        p5InstanceRef.current = new p5(sketch);
+        p5InstanceRef.current = new p5(sketch, sketchRef.current);
     }
     
     return () => {

@@ -92,7 +92,7 @@ const Controls: React.FC<ControlsProps> = ({ settings, settingsConfig, onSetting
             </ControlButton>
        </div>
       
-      <div className="space-y-6 mt-6">
+<div className={`mt-6 grid gap-4 ${gameMode === 'sheldon' ? 'grid-cols-2' : 'grid-cols-1'}`}>
         <Slider 
             label="Rock Population" 
             id="rockCount"
@@ -148,7 +148,7 @@ const Controls: React.FC<ControlsProps> = ({ settings, settingsConfig, onSetting
                 />
             </>
         )}
-        <hr className={theme.divider} />
+        <hr className={`${theme.divider} col-span-full`} />
         <Slider 
             label="Agent Speed" 
             id="speed"
