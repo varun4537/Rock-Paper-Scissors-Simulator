@@ -1,0 +1,5 @@
+{
+  "name": "Rock Paper Scissors Simulation",
+  "description": "An interactive p5.js simulation of Rock, Paper, and Scissors agents in a circular arena. Agents move randomly and convert each other on collision based on classic RPS rules. Features live controls for population, speed, and arena parameters, with a real-time statistics display.",
+  "requestFramePermissions": []
+}
