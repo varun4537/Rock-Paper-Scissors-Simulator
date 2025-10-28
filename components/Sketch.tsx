@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import type p5 from 'p5';
+import p5 from 'p5';
 import type { SimulationSettings, Stats, GameMode, SimulationState } from '../types';
 import { AgentType } from '../types';
 import { AGENT_COLORS_CLASSIC, AGENT_COLORS_SHELDON, AGENT_RADIUS } from '../constants';
@@ -234,7 +234,7 @@ const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, ga
         if (p5InstanceRef.current) {
             p5InstanceRef.current.remove();
         }
-        p5InstanceRef.current = new (window as any).p5(sketch, sketchRef.current);
+        p5InstanceRef.current = new p5(sketch);
     }
     
     return () => {
