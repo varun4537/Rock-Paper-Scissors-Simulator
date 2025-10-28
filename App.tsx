@@ -56,9 +56,9 @@ const App: React.FC = () => {
     } else { // sheldon
        setSettings(prev => ({
         ...prev,
-        rockCount: prev.rockCount || 30,
-        paperCount: prev.paperCount || 30,
-        scissorsCount: prev.scissorsCount || 30,
+        rockCount: prev.rockCount ?? 30,
+        paperCount: prev.paperCount ?? 30,
+        scissorsCount: prev.scissorsCount ?? 30,
         lizardCount: 30,
         spockCount: 30,
        }));
@@ -164,10 +164,11 @@ const App: React.FC = () => {
           </div>
 
           <div className={`${theme.panelBg} lg:col-span-2 rounded-2xl shadow-lg border ${theme.panelBorder} aspect-square overflow-hidden`}>
-            <Sketch 
+            <Sketch
               key={simulationKey}
-              settings={settings} 
-              onStatsUpdate={handleStatsUpdate} 
+              restartKey={simulationKey}
+              settings={settings}
+              onStatsUpdate={handleStatsUpdate}
               gameMode={gameMode}
               simulationState={simulationState}
             />

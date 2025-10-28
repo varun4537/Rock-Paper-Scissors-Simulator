@@ -5,13 +5,14 @@ import { AgentType } from '../types';
 import { AGENT_COLORS_CLASSIC, AGENT_COLORS_SHELDON, AGENT_RADIUS } from '../constants';
 
 interface SketchProps {
+  restartKey: number;
   settings: SimulationSettings;
   onStatsUpdate: (stats: Stats) => void;
   gameMode: GameMode;
   simulationState: SimulationState;
 }
 
-const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simulationState }) => {
+const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, gameMode, simulationState }) => {
   const sketchRef = useRef<HTMLDivElement>(null);
   const p5InstanceRef = useRef<p5 | null>(null);
 
@@ -224,7 +225,6 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
                 if (agent.type === AgentType.Spock) acc.spock++;
                 return acc;
             }, { rock: 0, paper: 0, scissors: 0, lizard: 0, spock: 0, total: agents.length, wins: { ...winCounts } });
-            stats.total = agents.length;
             onStatsUpdate(stats);
         }
       };
@@ -241,8 +241,8 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
       p5InstanceRef.current?.remove();
       p5InstanceRef.current = null;
     };
-// Fix: Removed `simulationKey` from the dependency array because it's not a prop.
-  }, [settings, onStatsUpdate, gameMode]);
+// Re-added restartKey to trigger resets
+  }, [restartKey, settings, onStatsUpdate, gameMode]);
   
   useEffect(() => {
     const p5Instance = p5InstanceRef.current;
