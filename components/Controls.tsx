@@ -92,7 +92,7 @@ const Controls: React.FC<ControlsProps> = ({ settings, settingsConfig, onSetting
             </ControlButton>
        </div>
       
-<div className={`mt-6 grid gap-4 ${gameMode === 'sheldon' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+      <div className="space-y-6 mt-6">
         <Slider 
             label="Rock Population" 
             id="rockCount"
@@ -120,7 +120,6 @@ const Controls: React.FC<ControlsProps> = ({ settings, settingsConfig, onSetting
             min={settingsConfig.scissorsCount.min}
             max={settingsConfig.scissorsCount.max}
             step={settingsConfig.scissorsCount.step}
-            // Fix: Corrected typo in function name from `handleSliderchange` to `handleSliderChange`.
             onChange={handleSliderChange}
             gameMode={gameMode}
         />
@@ -148,7 +147,7 @@ const Controls: React.FC<ControlsProps> = ({ settings, settingsConfig, onSetting
                 />
             </>
         )}
-        <hr className={`${theme.divider} col-span-full`} />
+        <hr className={theme.divider} />
         <Slider 
             label="Agent Speed" 
             id="speed"

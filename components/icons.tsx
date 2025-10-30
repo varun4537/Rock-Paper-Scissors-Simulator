@@ -1,5 +1,5 @@
+
 import React from 'react';
-import sheldonImg from '../Sheldon2.jpg';
 
 // AGENT ICON REACT COMPONENTS
 export const RockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -10,7 +10,7 @@ export const RockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path d="m10 17 1-1" />
     <path d="M16 13.7A2.8 2.8 0 0 0 15 12a2.8 2.8 0 0 0-4-1" />
     <path d="M9.4 6.6a2.8 2.8 0 0 0-2-1.1 2.8 2.8 0 0 0-2.3 2.3 2.8 2.8 0 0 0 1 2.3 2.8 2.8 0 0 0 4 1.1 2.8 2.8 0 0 0 .3-3.6Z" />
-    <path d="M14.6 6.6a2.8 2.8 0 1 2-1.1 2.3 2.8 2.8 0 0 1-1 2.3 2.8 2.8 0 0 1-4 1.1 2.8 2.8 0 0 1-.3-3.6Z" />
+    <path d="M14.6 6.6a2.8 2.8 0 0 1 2-1.1 2.8 2.8 0 0 1 2.3 2.3 2.8 2.8 0 0 1-1 2.3 2.8 2.8 0 0 1-4 1.1 2.8 2.8 0 0 1-.3-3.6Z" />
     <path d="M12 12a2.8 2.8 0 0 0-1.4 5.1" />
   </svg>
 );
@@ -54,16 +54,17 @@ export const SpockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <path d="M10.5 22H12h1.5" />
     </svg>
 );
-export const SheldonIcon: React.FC<React.HTMLProps<HTMLImageElement>> = (props) => (
-    <img
-        src={sheldonImg}
-        alt="Sheldon Cooper"
-        className={`rounded-full object-cover ${props.className ?? ''}`}
-        style={{ width: 60, height: 60, objectFit: 'cover', ...props.style }}
+export const SheldonIcon: React.FC<React.HTMLProps<HTMLImageElement>> = ({ className, ...rest }) => (
+    <img 
+        src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAEAAQADAREAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAABgcDBAUCAAH/xAA4EAABBAEDAQUGBQUBAQAAAAABAAIDBAUGERIhEzFBUQcyYXGBkSIjQlKhscEUE2JyFTOC0eHw/QAFwEBAQEBAAAAAAAAAAAAAAAAAAECA//EACIRAQEAAgIDAAIDAQAAAAAAAAABAhEDEiExE0FRBCIyYf/aAAwDAQACEQMRAD8A+qaIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICheo+r6Lp5kcNkSWLzwHMx9YAuLfcuPIe/dZ+p+r8HRU7F3LXLNcRMIa53nOcegA7kr506k6nyOpcts3MrO5znnwxg+WNv3WgcgEFl1X1h1P1A+RmLtXYw5Ja6pA5w49/EfF+qwWRzGSy8rp8nlbl6Rxy59mV8hJ+pJKpICIiAsnp/qXqLpeZkvT2StbE45fWkJfC//AFM/wBRwVCRA+oenvUfRs9HDFm5XYypG0B0leHxl/wA3N8JP0U/d9ZOnONa4z550paPkjjY97z8gG/6r5bRB+l+o/VVCjJJj+l4Jb1huWOu1HBrR8mjxH5kAL5/zebz2evzX8vbluXZnl8lbnucT8yeVQR AREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREH/9k=" 
+        alt="Sheldon Cooper" 
+        {...rest}
+        className={`rounded-full object-cover ${className ?? ''}`} 
     />
 );
 
 
+// CONTROL ICON REACT COMPONENTS
 export const PlayIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
         <polygon points="5 3 19 12 5 21 5 3" />
@@ -84,7 +85,7 @@ export const RestartIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
         <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
         <path d="M3 3v5h5" />
-        <path d="M21 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
         <path d="M21 21v-5h-5" />
     </svg>
 );

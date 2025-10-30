@@ -40,9 +40,9 @@ const StatBar: React.FC<{
 };
 
 const WinCounter: React.FC<{ Icon: React.ElementType; wins: number; color: string; gameMode: GameMode; }> = ({ Icon, wins, color, gameMode }) => (
-    <div className={`flex items-center gap-2 ${gameMode === 'classic' ? 'bg-gray-700/50' : 'bg-black/20'} p-2 rounded-lg`}>
-        <Icon className="h-5 w-5" style={{ color }}/>
-        <span className="font-mono text-lg font-bold text-white">{wins}</span>
+    <div className={`flex flex-col items-center justify-center gap-1 ${gameMode === 'classic' ? 'bg-gray-700/50' : 'bg-black/20'} p-2 rounded-lg h-24 text-center`}>
+        <Icon className="h-8 w-8 drop-shadow-md" style={{ color }}/>
+        <span className="font-mono text-xl font-bold text-white mt-1">{wins}</span>
     </div>
 );
 

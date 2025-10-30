@@ -1,20 +1,24 @@
 import React, { useRef, useEffect } from 'react';
-import p5 from 'p5';
+import type p5 from 'p5';
 import type { SimulationSettings, Stats, GameMode, SimulationState } from '../types';
 import { AgentType } from '../types';
 import { AGENT_COLORS_CLASSIC, AGENT_COLORS_SHELDON, AGENT_RADIUS } from '../constants';
 
 interface SketchProps {
-  restartKey: number;
   settings: SimulationSettings;
   onStatsUpdate: (stats: Stats) => void;
   gameMode: GameMode;
   simulationState: SimulationState;
 }
 
-const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, gameMode, simulationState }) => {
+const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simulationState }) => {
   const sketchRef = useRef<HTMLDivElement>(null);
   const p5InstanceRef = useRef<p5 | null>(null);
+  const simulationStateRef = useRef(simulationState);
+
+  useEffect(() => {
+    simulationStateRef.current = simulationState;
+  }, [simulationState]);
 
   useEffect(() => {
     const sketch = (p: p5) => {
@@ -200,7 +204,7 @@ const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, ga
         }
         p.circle(p.width/2, p.height/2, arenaRadius * 2);
 
-        if (simulationState === 'running') {
+        if (simulationStateRef.current === 'running') {
             agents.forEach(agent => {
               agent.update();
             });
@@ -225,6 +229,7 @@ const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, ga
                 if (agent.type === AgentType.Spock) acc.spock++;
                 return acc;
             }, { rock: 0, paper: 0, scissors: 0, lizard: 0, spock: 0, total: agents.length, wins: { ...winCounts } });
+            stats.total = agents.length;
             onStatsUpdate(stats);
         }
       };
@@ -234,15 +239,14 @@ const Sketch: React.FC<SketchProps> = ({ restartKey, settings, onStatsUpdate, ga
         if (p5InstanceRef.current) {
             p5InstanceRef.current.remove();
         }
-        p5InstanceRef.current = new p5(sketch, sketchRef.current);
+        p5InstanceRef.current = new (window as any).p5(sketch, sketchRef.current);
     }
     
     return () => {
       p5InstanceRef.current?.remove();
       p5InstanceRef.current = null;
     };
-// Re-added restartKey to trigger resets
-  }, [restartKey, settings, onStatsUpdate, gameMode]);
+  }, [settings, onStatsUpdate, gameMode]);
   
   useEffect(() => {
     const p5Instance = p5InstanceRef.current;
