@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import type p5 from 'p5';
 import type { SimulationSettings, Stats, GameMode, SimulationState } from '../types';
@@ -9,39 +10,53 @@ interface SketchProps {
   onStatsUpdate: (stats: Stats) => void;
   gameMode: GameMode;
   simulationState: SimulationState;
+  agentToAdd: AgentType | null;
 }
 
-const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simulationState }) => {
+const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simulationState, agentToAdd }) => {
   const sketchRef = useRef<HTMLDivElement>(null);
   const p5InstanceRef = useRef<p5 | null>(null);
   const simulationStateRef = useRef(simulationState);
+  const agentToAddRef = useRef(agentToAdd);
 
   useEffect(() => {
     simulationStateRef.current = simulationState;
   }, [simulationState]);
+  
+  useEffect(() => {
+    agentToAddRef.current = agentToAdd;
+  }, [agentToAdd]);
 
   useEffect(() => {
     const sketch = (p: p5) => {
       let agents: Agent[] = [];
+      let effects: CollisionEffect[] = [];
       let rules: Map<AgentType, AgentType[]>;
       let winCounts: { [key in keyof Stats['wins']]: number };
+      let nextAgentId = 0;
       
       const agentColors = gameMode === 'classic' ? AGENT_COLORS_CLASSIC : AGENT_COLORS_SHELDON;
 
       const initializeState = () => {
         agents = [];
+        effects = [];
         winCounts = { rock: 0, paper: 0, scissors: 0, lizard: 0, spock: 0 };
         
-        let idCounter = 0;
-        for (let i = 0; i < settings.rockCount; i++) agents.push(new Agent(idCounter++, AgentType.Rock));
-        for (let i = 0; i < settings.paperCount; i++) agents.push(new Agent(idCounter++, AgentType.Paper));
-        for (let i = 0; i < settings.scissorsCount; i++) agents.push(new Agent(idCounter++, AgentType.Scissors));
+        nextAgentId = 0;
+        const createAgents = (count: number, type: AgentType) => {
+          for (let i = 0; i < count; i++) {
+            agents.push(new Agent(nextAgentId++, type, true));
+          }
+        };
+
+        createAgents(settings.rockCount, AgentType.Rock);
+        createAgents(settings.paperCount, AgentType.Paper);
+        createAgents(settings.scissorsCount, AgentType.Scissors);
         if (gameMode === 'sheldon') {
-          for (let i = 0; i < settings.lizardCount; i++) agents.push(new Agent(idCounter++, AgentType.Lizard));
-          for (let i = 0; i < settings.spockCount; i++) agents.push(new Agent(idCounter++, AgentType.Spock));
+          createAgents(settings.lizardCount, AgentType.Lizard);
+          createAgents(settings.spockCount, AgentType.Spock);
         }
 
-        // Only draw the initial state, don't start the loop until play is pressed.
         if (p5InstanceRef.current) {
           p.redraw();
         }
@@ -70,6 +85,41 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
         else if (type === AgentType.Lizard) winCounts.lizard++;
         else if (type === AgentType.Spock) winCounts.spock++;
       };
+      
+      class CollisionEffect {
+        pos: p5.Vector;
+        color: string;
+        radius: number;
+        maxRadius: number;
+        lifespan: number;
+
+        constructor(pos: p5.Vector, color: string) {
+          this.pos = pos;
+          this.color = color;
+          this.radius = 0;
+          this.maxRadius = 20;
+          this.lifespan = 255;
+        }
+
+        update() {
+          this.radius += 1;
+          this.lifespan -= 15;
+        }
+        
+        isFinished() {
+          return this.lifespan <= 0;
+        }
+
+        display() {
+          const c = p.color(this.color);
+          c.setAlpha(this.lifespan);
+          p.noFill();
+          p.strokeWeight(2);
+          p.stroke(c);
+          p.circle(this.pos.x, this.pos.y, this.radius * 2);
+        }
+      }
+
 
       class Agent {
         id: number;
@@ -79,18 +129,24 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
         radius: number;
         color: { main: string; trail: string };
 
-        constructor(id: number, type: AgentType) {
+        constructor(id: number, type: AgentType, isInitial: boolean = false, position?: p5.Vector) {
           this.id = id;
           this.type = type;
           this.radius = AGENT_RADIUS;
           this.color = agentColors[this.type];
           
-          const angle = p.random(p.TWO_PI);
-          const r = p.random((p.width / 2) * settings.arenaRadiusMultiplier - this.radius);
-          this.pos = p.createVector(
-              p.width / 2 + r * Math.cos(angle), 
-              p.height / 2 + r * Math.sin(angle)
-          );
+          if (position) {
+            this.pos = position.copy();
+          } else if (isInitial) {
+             const angle = p.random(p.TWO_PI);
+             const r = p.random((p.width / 2) * settings.arenaRadiusMultiplier - this.radius);
+             this.pos = p.createVector(
+                 p.width / 2 + r * Math.cos(angle), 
+                 p.height / 2 + r * Math.sin(angle)
+             );
+          } else {
+            this.pos = p.createVector(p.width/2, p.height/2);
+          }
           
           this.vel = p5.Vector.random2D().mult(settings.speed);
         }
@@ -129,15 +185,35 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
         resolveCollision(other: Agent) {
             const thisBeatsOther = rules.get(this.type)?.includes(other.type);
             const otherBeatsThis = rules.get(other.type)?.includes(this.type);
-
+            
+            let conversion = false;
+            
             if (thisBeatsOther && !otherBeatsThis) {
                 incrementWin(this.type);
                 other.updateType(this.type);
+                conversion = true;
             } else if (otherBeatsThis && !thisBeatsOther) {
                 incrementWin(other.type);
                 this.updateType(other.type);
+                conversion = true;
             }
 
+            if (conversion) {
+                 const effectPos = p5.Vector.add(this.pos, other.pos).div(2);
+                 const winnerColor = thisBeatsOther ? this.color.main : other.color.main;
+                 effects.push(new CollisionEffect(effectPos, winnerColor));
+            }
+            
+            // Positional Correction: Prevent agents from sticking together
+            const distance = this.pos.dist(other.pos);
+            const overlap = (this.radius + other.radius) - distance;
+            if (overlap > 0) {
+              const correction = p5.Vector.sub(this.pos, other.pos).normalize().mult(overlap / 2);
+              this.pos.add(correction);
+              other.pos.sub(correction);
+            }
+
+            // Dynamic Collision (Bounce)
             const normal = p5.Vector.sub(other.pos, this.pos).normalize();
             const tangent = p.createVector(-normal.y, normal.x);
             
@@ -220,6 +296,15 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
           agent.display();
         });
 
+        // Update and display effects
+        for (let i = effects.length - 1; i >= 0; i--) {
+            effects[i].update();
+            effects[i].display();
+            if (effects[i].isFinished()) {
+                effects.splice(i, 1);
+            }
+        }
+
         if (p.frameCount % 5 === 0) {
             const stats: Stats = agents.reduce((acc, agent) => {
                 if (agent.type === AgentType.Rock) acc.rock++;
@@ -233,6 +318,22 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
             onStatsUpdate(stats);
         }
       };
+      
+      p.mousePressed = () => {
+        if (simulationStateRef.current === 'stopped') return;
+        if (agentToAddRef.current !== null) {
+          const type = agentToAddRef.current;
+          const mousePos = p.createVector(p.mouseX, p.mouseY);
+          
+          const center = p.createVector(p.width / 2, p.height / 2);
+          const arenaRadius = (p.width / 2) * settings.arenaRadiusMultiplier;
+
+          if (mousePos.dist(center) < arenaRadius - AGENT_RADIUS) {
+            agents.push(new Agent(nextAgentId++, type, false, mousePos));
+            p.redraw();
+          }
+        }
+      }
     };
     
     if (sketchRef.current) {
@@ -256,13 +357,12 @@ const Sketch: React.FC<SketchProps> = ({ settings, onStatsUpdate, gameMode, simu
         p5Instance.loop();
     } else if (simulationState === 'paused' || simulationState === 'stopped') {
         p5Instance.noLoop();
-        // Redraw once to show the current state when paused or stopped
         p5Instance.redraw();
     }
   }, [simulationState]);
 
 
-  return <div ref={sketchRef} className="w-full h-full cursor-pointer" />;
+  return <div ref={sketchRef} className="w-full h-full" />;
 };
 
 export default Sketch;

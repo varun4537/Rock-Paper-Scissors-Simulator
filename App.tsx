@@ -16,6 +16,8 @@ const App: React.FC = () => {
   const [gameMode, setGameMode] = useState<GameMode>('classic');
   const [simulationState, setSimulationState] = useState<SimulationState>('stopped');
   const [winner, setWinner] = useState<AgentType | null>(null);
+  const [agentToAdd, setAgentToAdd] = useState<AgentType | null>(null);
+
 
   const simulationStateRef = useRef(simulationState);
   useEffect(() => {
@@ -230,13 +232,14 @@ const App: React.FC = () => {
                  <StatsDisplay stats={liveStats} gameMode={gameMode}/>
             </aside>
 
-            <div className={`${theme.panelBg} lg:col-span-2 rounded-2xl shadow-lg border ${theme.panelBorder} aspect-square overflow-hidden`}>
+            <div className={`${theme.panelBg} lg:col-span-2 rounded-2xl shadow-lg border ${theme.panelBorder} aspect-square overflow-hidden ${agentToAdd !== null ? 'cursor-crosshair' : ''}`}>
               <Sketch 
                 key={simulationKey}
                 settings={settings} 
                 onStatsUpdate={handleStatsUpdate} 
                 gameMode={gameMode}
                 simulationState={simulationState}
+                agentToAdd={agentToAdd}
               />
             </div>
             
@@ -251,6 +254,8 @@ const App: React.FC = () => {
                   simulationState={simulationState}
                   totalPopulation={totalPopulation}
                   gameMode={gameMode}
+                  onSetAgentToAdd={setAgentToAdd}
+                  agentToAdd={agentToAdd}
                 />
             </aside>
         </main>
